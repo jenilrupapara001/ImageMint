@@ -6,27 +6,27 @@ import ClientProviders from '@/components/ClientProviders';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'LinkPixel | Instant Image Hosting for Developers',
-  description: 'The fastest way to host images and generate public URLs. Instant setup, minimal UI, and zero friction.',
+  title: 'ImageMint | Professional Image Hosting for Developers',
+  description: 'ImageMint is the fastest, most reliable way to host images and generate instant public URLs. Built for modern developers and creators who need zero-friction asset management and lightning-fast delivery.',
   openGraph: {
     type: 'website',
     url: 'https://imagemint.easysell.work.gd',
-    title: 'LinkPixel | Instant Image Hosting',
-    description: 'Host images and get instant public links. Perfect for developers and creators.',
+    title: 'ImageMint | Instant Image Hosting',
+    description: 'Host images and get instant public links with ImageMint. The professional choice for developers and creators needing fast, reliable, and secure image hosting.',
     images: [
       {
-        url: '/logo-social.png',
+        url: 'https://imagemint.easysell.work.gd/logo-social.png',
         width: 1200,
         height: 630,
-        alt: 'LinkPixel - Instant Image Hosting',
+        alt: 'ImageMint - Professional Image Hosting',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LinkPixel | Image Hosting',
-    description: 'The fastest way to host images for developers.',
-    images: ['/logo-social.png'],
+    title: 'ImageMint | Image Hosting',
+    description: 'The fastest way to host images for developers and creators.',
+    images: ['https://imagemint.easysell.work.gd/logo-social.png'],
   },
 };
 

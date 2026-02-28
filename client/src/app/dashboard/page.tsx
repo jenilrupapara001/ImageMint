@@ -137,7 +137,7 @@ export default function Dashboard() {
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'LinkPixel_Export.xlsx';
+            a.download = 'ImageMint_Export.xlsx';
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -178,7 +178,7 @@ export default function Dashboard() {
                     <div className="w-6 h-6 bg-black rounded flex items-center justify-center">
                         <div className="w-3 h-3 bg-white rounded-sm"></div>
                     </div>
-                    <span className="text-xl font-bold tracking-tight">LinkPixel</span>
+                    <span className="text-xl font-bold tracking-tight">ImageMint</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <span className="text-sm text-gray-500">{user?.email}</span>

@@ -12,7 +12,7 @@ export default function LandingPage() {
           <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
             <div className="w-4 h-4 bg-white rounded-sm"></div>
           </div>
-          <span className="text-xl font-bold tracking-tight">LinkPixel</span>
+          <span className="text-xl font-bold tracking-tight">ImageMint</span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
           <a href="#features" className="hover:text-black transition-all">Features</a>
@@ -30,7 +30,7 @@ export default function LandingPage() {
           Image hosting for <br /> modern developers.
         </h1>
         <p className="text-xl text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed">
-          LinkPixel is the fastest way to host images and generate public URLs.
+          ImageMint is the fastest way to host images and generate public URLs.
           Instant setup, minimal UI, and zero friction.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -77,7 +77,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-xl font-bold mb-4">Developer API</h3>
               <p className="text-gray-500 leading-relaxed">
-                Integrate LinkPixel directly into your workflow with our simple REST API.
+                Integrate ImageMint directly into your workflow with our simple REST API.
               </p>
             </div>
             <div className="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
@@ -157,14 +157,14 @@ export default function LandingPage() {
             <div className="w-6 h-6 bg-black rounded flex items-center justify-center">
               <div className="w-3 h-3 bg-white rounded-sm"></div>
             </div>
-            <span className="font-bold tracking-tight">LinkPixel</span>
+            <span className="font-bold tracking-tight">ImageMint</span>
           </div>
           <div className="flex gap-8 text-sm text-gray-400">
             <a href="#" className="hover:text-black transition-all">Terms</a>
             <a href="#" className="hover:text-black transition-all">Privacy</a>
             <a href="#" className="hover:text-black transition-all">Contact</a>
           </div>
-          <p className="text-sm text-gray-400">© 2026 LinkPixel. All rights reserved.</p>
+          <p className="text-sm text-gray-400">© 2026 ImageMint. All rights reserved.</p>
         </div>
       </footer>
     </div>
