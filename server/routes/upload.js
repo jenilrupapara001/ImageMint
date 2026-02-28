@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const auth = require('../middleware/auth');
 const Image = require('../models/Image');
@@ -47,6 +48,17 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'Please upload an image' });
+        }
+
+        console.log('Multer result:', {
+            path: req.file.path,
+            destination: req.file.destination,
+            filename: req.file.filename
+        });
+
+        if (!fs.existsSync(req.file.path)) {
+            console.error('CRITICAL: File not found on disk at', req.file.path);
+            return res.status(500).json({ message: 'Error: File failed to save to disk' });
         }
 
         const user = await User.findById(req.user.userId);

@@ -143,6 +143,31 @@ export default function Dashboard() {
         }
     };
 
+    const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    const handleCopy = async (id: string, url: string) => {
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopiedId(id);
+            setTimeout(() => setCopiedId(null), 2000);
+        } catch (err) {
+            console.error('Failed to copy', err);
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = url;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                setCopiedId(id);
+                setTimeout(() => setCopiedId(null), 2000);
+            } catch (copyErr) {
+                alert('Failed to copy link');
+            }
+            document.body.removeChild(textArea);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white text-black font-sans">
             <nav className="border-b border-gray-100 px-6 py-4 flex justify-between items-center">
@@ -270,13 +295,14 @@ export default function Dashboard() {
                                     <p className="font-medium text-sm truncate mb-3">{img.originalName}</p>
                                     <div className="flex items-center gap-2">
                                         <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(img.url);
-                                            }}
-                                            className="flex-1 flex items-center justify-center gap-2 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-bold transition-all"
+                                            onClick={() => handleCopy(img._id, img.url)}
+                                            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${copiedId === img._id
+                                                ? 'bg-green-50 text-green-600'
+                                                : 'bg-gray-50 hover:bg-gray-100 text-gray-900'
+                                                }`}
                                         >
                                             <Copy className="w-3.5 h-3.5" />
-                                            Copy Link
+                                            {copiedId === img._id ? 'Copied!' : 'Copy Link'}
                                         </button>
                                         <button
                                             onClick={() => handleDelete(img._id)}
