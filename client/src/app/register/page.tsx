@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
@@ -12,7 +12,7 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const { register } = useAuth();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         setLoading(true);
