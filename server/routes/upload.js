@@ -17,9 +17,8 @@ const storage = multer.diskStorage({
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        const fileName = `${uuidv4()}${ext}`;
-        cb(null, fileName);
+        // Keeping original filename as requested by user
+        cb(null, file.originalname);
     },
 });
 
@@ -72,8 +71,12 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
             return res.status(400).json({ message: 'Storage limit exceeded. Please upgrade to Pro.' });
         }
 
-        const baseUrl = process.env.BASE_URL || 'http://localhost:5001';
-        const publicUrl = `${baseUrl}/uploads/${req.file.filename}`;
+        const baseUrl = (process.env.BASE_URL || 'http://localhost:5001').replace(/\/$/, '');
+        // We use /api/uploads if on production to match common Nginx proxy patterns
+        const pathPrefix = baseUrl.includes('localhost') ? '/uploads' : '/api/uploads';
+        const publicUrl = `${baseUrl}${pathPrefix}/${req.file.filename}`;
+
+        console.log('Public URL constructed:', publicUrl);
 
         const newImage = new Image({
             userId: req.user.userId,

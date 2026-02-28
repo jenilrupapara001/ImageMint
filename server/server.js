@@ -23,6 +23,7 @@ app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000'
 }));
 app.use('/uploads', express.static(uploadsDir));
+app.use('/api/uploads', express.static(uploadsDir)); // Robustness for proxies
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -48,8 +49,11 @@ app.get('/api/diag', (req, res) => {
             env: {
                 PORT: process.env.PORT,
                 BASE_URL: process.env.BASE_URL,
+                UPLOAD_DIR: process.env.UPLOAD_DIR,
                 NODE_ENV: process.env.NODE_ENV
-            }
+            },
+            cwd: process.cwd(),
+            dirname: __dirname
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
