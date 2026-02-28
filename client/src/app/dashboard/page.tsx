@@ -50,25 +50,27 @@ export default function Dashboard() {
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            handleFiles(e.dataTransfer.files[0]);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFiles(e.dataTransfer.files);
         }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
-        if (e.target.files && e.target.files[0]) {
-            handleFiles(e.target.files[0]);
+        if (e.target.files && e.target.files.length > 0) {
+            handleFiles(e.target.files);
         }
     };
 
-    const handleFiles = async (file: File) => {
+    const handleFiles = async (files: FileList) => {
         setUploading(true);
         setUploadError('');
         setProgress(10);
 
         const formData = new FormData();
-        formData.append('image', file);
+        Array.from(files).forEach(file => {
+            formData.append('images', file);
+        });
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
@@ -84,7 +86,8 @@ export default function Dashboard() {
             setProgress(100);
 
             if (response.ok) {
-                setImages((prev) => [data, ...prev]);
+                // data is now an array of saved images
+                setImages((prev) => [...data, ...prev]);
                 setTimeout(() => {
                     setUploading(false);
                     setProgress(0);
@@ -209,6 +212,7 @@ export default function Dashboard() {
                         type="file"
                         className="hidden"
                         accept="image/*"
+                        multiple
                         onChange={handleChange}
                     />
 
@@ -246,7 +250,7 @@ export default function Dashboard() {
                     <div>
                         <p className="text-sm font-medium text-gray-500 mb-1">Storage Used</p>
                         <p className="text-lg font-bold">
-                            {(user?.storageUsed / (1024 * 1024)).toFixed(2)} MB / 500 MB
+                            {(user?.storageUsed / (1024 * 1024)).toFixed(2)} MB / 1 GB
                         </p>
                     </div>
                     <div className="flex-1 max-w-xs mx-12">

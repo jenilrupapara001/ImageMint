@@ -36,28 +36,17 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
     storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
     fileFilter,
 });
 
 // @route   POST /api/upload
 // @desc    Upload an image
 // @access  Private
-router.post('/', auth, upload.single('image'), async (req, res) => {
+router.post('/', auth, upload.array('images', 20), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'Please upload an image' });
-        }
-
-        console.log('Multer result:', {
-            path: req.file.path,
-            destination: req.file.destination,
-            filename: req.file.filename
-        });
-
-        if (!fs.existsSync(req.file.path)) {
-            console.error('CRITICAL: File not found on disk at', req.file.path);
-            return res.status(500).json({ message: 'Error: File failed to save to disk' });
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ message: 'Please upload at least one image' });
         }
 
         const user = await User.findById(req.user.userId);
@@ -65,34 +54,39 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Storage limit check (500MB for free users)
+        const totalSize = req.files.reduce((acc, file) => acc + file.size, 0);
+
+        // Storage limit check (1GB for now)
         const MAX_STORAGE = 1024 * 1024 * 1024;
-        if (user.storageUsed + req.file.size > MAX_STORAGE) {
+        if (user.storageUsed + totalSize > MAX_STORAGE) {
             return res.status(400).json({ message: 'Storage limit exceeded. Please upgrade to Pro.' });
         }
 
         const baseUrl = (process.env.BASE_URL || 'http://localhost:5001').replace(/\/$/, '');
         // We use /api/uploads if on production to match common Nginx proxy patterns
         const pathPrefix = baseUrl.includes('localhost') ? '/uploads' : '/api/uploads';
-        const publicUrl = `${baseUrl}${pathPrefix}/${req.file.filename}`;
+        const savedImages = [];
 
-        console.log('Public URL constructed:', publicUrl);
+        for (const file of req.files) {
+            const publicUrl = `${baseUrl}${pathPrefix}/${file.filename}`;
 
-        const newImage = new Image({
-            userId: req.user.userId,
-            fileName: req.file.filename,
-            originalName: req.file.originalname,
-            size: req.file.size,
-            url: publicUrl,
-        });
+            const newImage = new Image({
+                userId: req.user.userId,
+                fileName: file.filename,
+                originalName: file.originalname,
+                size: file.size,
+                url: publicUrl,
+            });
 
-        const savedImage = await newImage.save();
+            const savedImage = await newImage.save();
+            savedImages.push(savedImage);
+        }
 
         // Update user storage
-        user.storageUsed += req.file.size;
+        user.storageUsed += totalSize;
         await user.save();
 
-        res.status(201).json(savedImage);
+        res.status(201).json(savedImages);
 
     } catch (err) {
         console.error(err);
