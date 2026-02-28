@@ -11,7 +11,9 @@ const app = express();
 
 // Ensure uploads directory exists
 const uploadsDir = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
+console.log('Using upload directory:', uploadsDir);
 if (!fs.existsSync(uploadsDir)) {
+    console.log('Creating upload directory...');
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
@@ -29,6 +31,29 @@ app.use('/api/images', require('./routes/images'));
 
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'LinkPixel API is running' });
+});
+
+app.get('/api/diag', (req, res) => {
+    try {
+        const uploadsDir = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
+        const exists = fs.existsSync(uploadsDir);
+        let files = [];
+        if (exists) {
+            files = fs.readdirSync(uploadsDir);
+        }
+        res.json({
+            uploadsDir,
+            exists,
+            files: files.slice(0, 50),
+            env: {
+                PORT: process.env.PORT,
+                BASE_URL: process.env.BASE_URL,
+                NODE_ENV: process.env.NODE_ENV
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 const PORT = process.env.PORT || 5001;

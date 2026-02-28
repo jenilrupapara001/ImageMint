@@ -12,6 +12,7 @@ const router = express.Router();
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadPath = process.env.UPLOAD_DIR || 'uploads/';
+        console.log('Multer saving to:', uploadPath);
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
@@ -54,7 +55,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
         }
 
         // Storage limit check (500MB for free users)
-        const MAX_STORAGE = 500 * 1024 * 1024;
+        const MAX_STORAGE = 1024 * 1024 * 1024;
         if (user.storageUsed + req.file.size > MAX_STORAGE) {
             return res.status(400).json({ message: 'Storage limit exceeded. Please upgrade to Pro.' });
         }
