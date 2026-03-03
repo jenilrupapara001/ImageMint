@@ -36,7 +36,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
     storage,
-    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+    limits: { fileSize: 1000 * 1024 * 1024 * 1024 }, // Effectively unlimited (1TB)
     fileFilter,
 });
 
@@ -56,11 +56,7 @@ router.post('/', auth, upload.array('images', 20), async (req, res) => {
 
         const totalSize = req.files.reduce((acc, file) => acc + file.size, 0);
 
-        // Storage limit check (1GB for now)
-        const MAX_STORAGE = 1024 * 1024 * 1024;
-        if (user.storageUsed + totalSize > MAX_STORAGE) {
-            return res.status(400).json({ message: 'Storage limit exceeded. Please upgrade to Pro.' });
-        }
+        // Storage limit check removed as requested
 
         const baseUrl = (process.env.BASE_URL || 'http://localhost:5001').replace(/\/$/, '');
         // We use /api/uploads if on production to match common Nginx proxy patterns
