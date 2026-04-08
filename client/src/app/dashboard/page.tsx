@@ -65,37 +65,51 @@ export default function Dashboard() {
     const handleFiles = async (files: FileList) => {
         setUploading(true);
         setUploadError('');
-        setProgress(10);
+        setProgress(0);
 
-        const formData = new FormData();
-        Array.from(files).forEach(file => {
-            formData.append('images', file);
-        });
+        const fileArray = Array.from(files);
+        const batchSize = 10;
+        const totalBatches = Math.ceil(fileArray.length / batchSize);
+        let currentBatch = 0;
 
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
-            const response = await fetch(`${apiUrl}/upload`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
-            });
+            
+            for (let i = 0; i < fileArray.length; i += batchSize) {
+                currentBatch++;
+                const chunk = fileArray.slice(i, i + batchSize);
+                const formData = new FormData();
+                chunk.forEach(file => {
+                    formData.append('images', file);
+                });
 
-            const data = await response.json();
-            setProgress(100);
+                const response = await fetch(`${apiUrl}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
 
-            if (response.ok) {
-                // data is now an array of saved images
-                setImages((prev) => [...data, ...prev]);
-                setTimeout(() => {
+                const data = await response.json();
+
+                if (response.ok) {
+                    // data is now an array of saved images from this batch
+                    setImages((prev) => [...data, ...prev]);
+                    const currentProgress = Math.round((currentBatch / totalBatches) * 100);
+                    setProgress(currentProgress);
+                } else {
+                    setUploadError(data.message || 'Upload failed');
                     setUploading(false);
-                    setProgress(0);
-                }, 1000);
-            } else {
-                setUploadError(data.message || 'Upload failed');
-                setUploading(false);
+                    return;
+                }
             }
+
+            setTimeout(() => {
+                setUploading(false);
+                setProgress(0);
+            }, 1000);
+            
         } catch (err) {
             setUploadError('Connection lost');
             setUploading(false);
@@ -222,7 +236,7 @@ export default function Dashboard() {
 
                     <div className="text-center">
                         <p className="text-lg font-medium">Click or drag images to upload</p>
-                        <p className="text-sm text-gray-400 mt-1">PNG, JPG, WEBP up to 5MB</p>
+                        <p className="text-sm text-gray-400 mt-1">PNG, JPG, WEBP supported (No size limits)</p>
                     </div>
 
                     {uploading && (
@@ -233,7 +247,7 @@ export default function Dashboard() {
                                     style={{ width: `${progress}%` }}
                                 ></div>
                             </div>
-                            <p className="text-sm font-medium">Uploading your pixel...</p>
+                             <p className="text-sm font-medium">Processing your files...</p>
                         </div>
                     )}
 

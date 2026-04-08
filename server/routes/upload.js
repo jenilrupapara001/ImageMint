@@ -43,7 +43,7 @@ const upload = multer({
 // @route   POST /api/upload
 // @desc    Upload an image
 // @access  Private
-router.post('/', auth, upload.array('images', 20), async (req, res) => {
+router.post('/', auth, upload.array('images'), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: 'Please upload at least one image' });
